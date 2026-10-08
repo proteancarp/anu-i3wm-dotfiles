@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+ROFI_THEME="$HOME/.config/rofi/powermenu.rasi"
+
+confirm_action() {
+    local action="$1"
+
+    choice=$(printf '%s\n' "Cancel" "$action" | rofi \
+        -dmenu \
+        -i \
+        -theme "$ROFI_THEME")
+
+    [[ "$choice" == "$action" ]]
+}
+
+options="Lock
+Logout
+Restart i3
+Reboot
+Shutdown"
+
+chosen=$(printf '%s\n' "$options" | rofi \
+    -dmenu \
+    -i \
+    -theme "$ROFI_THEME")
+
+case "$chosen" in
+    "Lock")
+        exec "$HOME/.config/i3/lock.sh"
+        ;;
+
+    "Logout")
+        if confirm_action "Logout"; then
+            i3-msg exit
+        fi
+        ;;
+
+    "Restart i3")
+        if confirm_action "Restart i3"; then
+            i3-msg restart
+        fi
+        ;;
+
+    "Reboot")
+        if confirm_action "Reboot"; then
+            systemctl reboot
+        fi
+        ;;
+
+    "Shutdown")
+        if confirm_action "Shutdown"; then
+            systemctl poweroff
+        fi
+        ;;
+esac

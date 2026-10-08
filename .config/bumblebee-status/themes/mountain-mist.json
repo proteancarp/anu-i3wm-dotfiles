@@ -1,0 +1,29 @@
+{
+  "defaults": {
+    "fg": "#c8d1d5",
+    "bg": "#11191c",
+    "padding": " ",
+    "default-separators": false
+  },
+  "warning": {"fg": "#a39a76"},
+  "critical": {"fg": "#b77d7d"},
+  "unavailable": {"fg": "#9b6b6b"},
+  "mm_audio": {
+    "muted": {"fg": "#657f91"}
+  },
+  "mm_wifi": {
+    "prefix": "|",
+    "connected": {"fg": "#6f9291"},
+    "disabled": {"fg": "#657f91"},
+    "disconnected": {"fg": "#c8d1d5"},
+    "connecting": {"fg": "#a39a76"}
+  },
+  "battery": {
+    "prefix": "| BAT",
+    "charged": {"fg": "#6f9291", "suffix": "full"},
+    "charging": {"fg": "#6f9291", "suffix": "+"},
+    "AC": {"fg": "#6f9291", "suffix": "AC"}
+  },
+  "date": {"prefix": "|"},
+  "clock": {"prefix": "|"}
+}

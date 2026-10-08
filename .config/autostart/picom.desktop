@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=picom
+# Disabled XDG override: Picom is started explicitly by the i3 config.
+Hidden=true

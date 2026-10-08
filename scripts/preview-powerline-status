@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+"""Read-only staged preview using the exact production Bumblebee 2.3.0 engine.
+
+Keep stdin open, as for i3bar. Click registrations remain in the modules but
+delivery is disabled here: a preview must not change audio/network/workspaces
+or launch helpers. No live configuration, launcher or theme is written.
+"""
+
+import os
+from pathlib import Path
+import runpy
+import signal
+import sys
+import tempfile
+
+
+def main():
+    root = Path(__file__).resolve().parents[1]
+    venv = Path.home() / '.local/share/venvs/bumblebee-status'
+    python = venv / 'bin/python'
+    engine = venv / 'bin/bumblebee-status'
+    if not python.is_file() or not engine.is_file():
+        raise RuntimeError(f'missing production environment: {venv}')
+    env = os.environ.copy()
+    env['PYTHONDONTWRITEBYTECODE'] = '1'
+    if Path(sys.prefix).resolve() != venv.resolve():
+        os.execve(python, [str(python), '-B', str(Path(__file__).resolve())], env)
+
+    import importlib.metadata
+    if importlib.metadata.version('bumblebee-status') != '2.3.0':
+        raise RuntimeError('preview requires exactly Bumblebee-status 2.3.0')
+
+    # The installed loader uses HOME for custom modules/themes, not XDG_CONFIG_HOME.
+    # A temporary HOME supplies the staged files at that exact verified location.
+    with tempfile.TemporaryDirectory(prefix='mountain-mist-powerline-') as tmp:
+        home = Path(tmp)
+        (home / '.config').mkdir()
+        (home / '.config/bumblebee-status').symlink_to(root / '.config/bumblebee-status')
+        (home / '.local').mkdir()
+        (home / '.local/lib').symlink_to(root / '.local/lib')
+        os.environ.update(HOME=tmp, XDG_CONFIG_HOME=str(home / '.config'),
+                          XDG_CACHE_HOME=str(home / '.cache'), XDG_RUNTIME_DIR=tmp,
+                          XDG_DATA_DIRS=f'{venv}/share:{os.environ.get("XDG_DATA_DIRS", "/usr/local/share:/usr/share")}',
+                          PYTHONDONTWRITEBYTECODE='1')
+        import bumblebee_status.discover
+        bumblebee_status.discover.discover()
+        import core.input
+        core.input.trigger = lambda event: None
+
+        battery_type = Path('/sys/class/power_supply/BAT0/type')
+        battery = 'BAT0' if battery_type.is_file() and battery_type.read_text().strip() == 'Battery' else 'auto'
+        sys.argv = [str(engine), '-c', str(root / '.config/bumblebee-status/config'),
+                    '-t', 'mountain-mist-powerline', '-p', f'battery.device={battery}']
+        backend = runpy.run_path(str(engine), run_name='powerline_preview_engine')
+        # Socket controls are unnecessary for a read-only preview, and sandbox
+        # socket denial should not obscure a theme-validation result.
+        backend['main'].__globals__['handle_commands'] = lambda config, lock: None
+        signal.signal(signal.SIGTERM, lambda signum, frame: stop())
+        backend['main']()
+
+
+def stop():
+    raise KeyboardInterrupt
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
+    except (OSError, RuntimeError) as exc:
+        print(f'preview-powerline-status: {exc}', file=sys.stderr)
+        raise SystemExit(1)

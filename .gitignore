@@ -1,0 +1,65 @@
+# Python caches, environments and coverage
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+.coverage
+.coverage.*
+htmlcov/
+
+# Local runtime/state and disposable validation artifacts
+/.cache/
+/.local/state/
+/.local/share/venvs/
+/backups/
+/tmp/
+/artifacts/
+/test-artifacts/
+/test-output/
+/.status-integration-*/
+*.log
+
+# Local secrets (ignore rules are not a substitute for a release audit)
+.env
+.env.*
+!.env.example
+/.ssh/
+/.gnupg/
+/.Xauthority
+/.ICEauthority
+.netrc
+.git-credentials
+*.key
+*.pem
+*.p12
+*.pfx
+id_rsa
+id_ecdsa
+id_ed25519
+id_dsa
+
+# Downloaded packages/build output
+*.deb
+*.rpm
+*.AppImage
+/build/
+/dist/
+
+# Editor/OS temporary files; legitimate .config and .local dotfiles stay tracked
+*~
+*.swp
+*.swo
+*.bak
+.#*
+\#*\#
+.DS_Store
+Thumbs.db

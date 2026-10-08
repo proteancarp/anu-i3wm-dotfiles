@@ -1,0 +1,70 @@
+configuration {
+    font: "Noto Sans Mono 10";
+    show-icons: false;
+    disable-history: true;
+}
+
+* {
+    bg: #11191c;
+    bg-alt: #182326;
+    fg: #c8d1d5;
+    muted: #657f91;
+    selection: #8aa3a5;
+    selection-fg: #11191c;
+    border-color: #46565b;
+    /* Child widgets do not automatically inherit container colors. */
+    background-color: transparent;
+    text-color: @fg;
+}
+
+window {
+    width: 680px;
+    background-color: @bg;
+    text-color: @fg;
+    border: 1px;
+    border-color: @border-color;
+    border-radius: 8px;
+    padding: 18px;
+}
+mainbox {
+    background-color: @bg;
+    text-color: @fg;
+    spacing: 10px;
+    children: [ inputbar, message, listview ];
+}
+inputbar {
+    background-color: @bg-alt;
+    text-color: @fg;
+    padding: 8px 12px;
+    spacing: 10px;
+    children: [ prompt, entry ];
+}
+prompt { background-color: inherit; text-color: @muted; }
+entry { background-color: inherit; text-color: @fg; }
+message {
+    background-color: inherit;
+    text-color: @fg;
+    padding: 8px;
+}
+textbox {
+    background-color: inherit;
+    text-color: inherit;
+}
+listview {
+    background-color: @bg;
+    text-color: @fg;
+    lines: 10;
+    spacing: 4px;
+    scrollbar: false;
+    fixed-height: false;
+}
+element {
+    background-color: @bg;
+    text-color: @fg;
+    padding: 9px 12px;
+    border-radius: 5px;
+}
+element normal.normal { background-color: @bg; text-color: @fg; }
+element alternate.normal { background-color: @bg; text-color: @fg; }
+element selected.normal { background-color: @selection; text-color: @selection-fg; }
+element-text { background-color: inherit; text-color: inherit; }

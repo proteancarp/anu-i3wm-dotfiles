@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+"""Monday-first month view with bounded, cancellable Rofi navigation."""
+
+from datetime import date
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'lib'))
+from mountain_mist.calendar_view import move, render
+from mountain_mist.runtime import CommandError, Deadline, choose, helper_signals, menu_lock
+
+
+def main():
+    helper_signals()
+    with menu_lock('calendar') as acquired:
+        if not acquired:
+            return 0
+        today = date.today()
+        year, month = today.year, today.month
+        actions = ['Previous month', 'Next month', 'Today', 'Close']
+        deadline = Deadline(300)
+        theme = Path.home() / '.config/rofi/calendar.rasi'
+        while True:
+            today = date.today()
+            index = choose(actions, 'Calendar', theme, render(year, month, today), deadline.run)
+            if index is None or actions[index] == 'Close':
+                return 0
+            year, month = move(year, month, actions[index], date.today())
+
+
+if __name__ == '__main__':
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        raise SystemExit(0)
+    except (CommandError, OSError, ValueError) as exc:
+        print(f'rofi-calendar: {exc}', file=sys.stderr)
+        raise SystemExit(1)

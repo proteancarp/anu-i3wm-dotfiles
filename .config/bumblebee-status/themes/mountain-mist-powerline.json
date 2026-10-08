@@ -1,0 +1,35 @@
+{
+  "defaults": {
+    "fg": "#c8d1d5",
+    "bg": "#11191c",
+    "padding": " ",
+    "separator": "\ue0b2",
+    "separator-block-width": 0,
+    "default-separators": false
+  },
+  "unavailable": {"fg": "#11191c", "bg": "#9b6b6b"},
+  "mm_audio": {
+    "volume": {"fg": "#e0e6e7", "bg": "#46565b"},
+    "mute": {"fg": "#c8d1d5", "bg": "#182326"},
+    "muted": {"fg": "#657f91", "bg": "#182124"}
+  },
+  "mm_wifi": {
+    "connected": {"fg": "#11191c", "bg": "#6f9291"},
+    "disconnected": {"fg": "#c8d1d5", "bg": "#46565b"},
+    "disabled": {"fg": "#657f91", "bg": "#182124"},
+    "connecting": {"fg": "#a39a76", "bg": "#182326"}
+  },
+  "battery": {
+    "prefix": "BAT",
+    "fg": "#8aa3a5",
+    "bg": "#182326",
+    "charged": {"fg": "#11191c", "bg": "#6f9291"},
+    "charging": {"fg": "#11191c", "bg": "#6f9291"},
+    "AC": {"fg": "#11191c", "bg": "#6f9291"},
+    "warning": {"fg": "#11191c", "bg": "#a39a76", "suffix": "LOW"},
+    "critical": {"fg": "#11191c", "bg": "#b77d7d", "suffix": "CRIT"},
+    "unknown": {"fg": "#b77d7d", "bg": "#24191b"}
+  },
+  "date": {"fg": "#c8d1d5", "bg": "#182124"},
+  "clock": {"fg": "#e0e6e7", "bg": "#11191c"}
+}

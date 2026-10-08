@@ -1,0 +1,21 @@
+general {
+    colors = true
+    interval = 5
+}
+
+order += "wireless _first_"
+order += "battery all"
+order += "tztime local"
+
+wireless _first_ {
+    format_up = "WiFi: %quality"
+    format_down = "WiFi: down"
+}
+
+battery all {
+    format = "BAT: %status %percentage"
+}
+
+tztime local {
+    format = "%a %d %b %H:%M"
+}

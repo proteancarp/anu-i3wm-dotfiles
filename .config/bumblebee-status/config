@@ -1,0 +1,27 @@
+[core]
+modules = mm_audio,mm_wifi,battery,datetime:date,datetime:clock
+theme = mountain-mist-powerline
+# Theme/state rendering is expensive in 2.3.0; five seconds is sufficient for
+# minute precision, and avoids paying that cost once per second.
+interval = 5
+
+[module-parameters]
+engine.collapsible = false
+mm_audio.interval = 5
+mm_wifi.interval = 15
+battery.device = BAT0
+battery.interval = 60
+battery.warning = 21
+battery.critical = 11
+battery.showremaining = false
+battery.decorate = false
+date.format = %a %d %b
+date.locale = C.UTF-8
+date.interval = 30
+date.left-click = "$HOME/.local/bin/rofi-calendar" </dev/null >/dev/null 2>&1
+date.left-click-wait = false
+clock.format = %H:%M
+clock.locale = C.UTF-8
+clock.interval = 15
+clock.left-click = "$HOME/.local/bin/rofi-calendar" </dev/null >/dev/null 2>&1
+clock.left-click-wait = false

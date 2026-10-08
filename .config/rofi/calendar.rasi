@@ -1,0 +1,7 @@
+@import "network.rasi"
+
+window { width: 430px; }
+/* Calendar needs its month/message and navigation, not a search field. */
+mainbox { children: [ message, listview ]; }
+listview { lines: 4; }
+textbox { font: "Noto Sans Mono 11"; }

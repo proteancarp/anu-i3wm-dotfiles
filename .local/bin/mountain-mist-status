@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# This process belongs to i3bar: leave stdin and protocol stdout untouched.
+set -euo pipefail
+
+STATUS_VENV="$HOME/.local/share/venvs/bumblebee-status"
+STATUS_CONFIG="$HOME/.config/bumblebee-status/config"
+STATUS_THEME="$HOME/.config/bumblebee-status/themes/mountain-mist-powerline.json"
+
+fail() {
+    printf 'mountain-mist-status: %s\n' "$*" >&2
+    exit 1
+}
+
+[[ -x "$STATUS_VENV/bin/python" && -x "$STATUS_VENV/bin/bumblebee-status" ]] ||
+    fail "missing Bumblebee venv executables in $STATUS_VENV"
+for required in "$STATUS_VENV/share/bumblebee-status/themes/default.json" \
+    "$STATUS_VENV/share/bumblebee-status/themes/icons/ascii.json" \
+    "$STATUS_CONFIG" "$STATUS_THEME" \
+    "$HOME/.config/bumblebee-status/modules/mm_audio.py" \
+    "$HOME/.config/bumblebee-status/modules/mm_wifi.py" \
+    "$HOME/.local/lib/mountain_mist/runtime.py" \
+    "$HOME/.local/lib/mountain_mist/network.py" \
+    "$HOME/.local/lib/mountain_mist/calendar_view.py" \
+    "$HOME/.config/rofi/network.rasi" "$HOME/.config/rofi/calendar.rasi"; do
+    [[ -r "$required" ]] || fail "incomplete installation: missing $required"
+done
+for helper in rofi-network rofi-calendar; do
+    [[ -x "$HOME/.local/bin/$helper" ]] || fail "missing executable helper: $helper"
+done
+if ! "$STATUS_VENV/bin/python" -c 'import importlib.metadata, sys; sys.exit(importlib.metadata.version("bumblebee-status") != "2.3.0")'; then
+    fail 'expected exactly bumblebee-status 2.3.0; reinstall the pinned environment'
+fi
+
+export XDG_DATA_DIRS="$STATUS_VENV/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+STATUS_BATTERY=auto
+if [[ -r /sys/class/power_supply/BAT0/type && "$(</sys/class/power_supply/BAT0/type)" == Battery ]]; then
+    STATUS_BATTERY=BAT0
+fi
+# An absolute theme stem prevents ambient theme overrides; default discovery
+# still needs the venv share root during imports. Do not source activation scripts.
+cd "$HOME/.config/bumblebee-status"
+exec "$STATUS_VENV/bin/bumblebee-status" -c "$STATUS_CONFIG" -t "${STATUS_THEME%.json}" \
+    -p "battery.device=$STATUS_BATTERY"

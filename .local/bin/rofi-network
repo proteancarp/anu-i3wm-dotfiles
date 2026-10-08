@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""Cached NetworkManager menu; new credentials are owned by the NM editor."""
+
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'lib'))
+from mountain_mist.network import Choice, NetworkManager, menu_choices, perform
+from mountain_mist.runtime import CommandError, Deadline, choose, helper_signals, menu_lock
+
+
+def main():
+    helper_signals()
+    with menu_lock('network') as acquired:
+        if not acquired:
+            return 0
+        deadline = Deadline(600)
+        nm = NetworkManager(deadline.run)
+        theme = Path.home() / '.config/rofi/network.rasi'
+        message = 'Wi-Fi association does not guarantee Internet access. New networks open connection settings.'
+        while True:
+            try:
+                choices = menu_choices(nm)
+            except (CommandError, ValueError):
+                choices = [Choice('Connection settings', 'settings')]
+                message = 'NetworkManager unavailable. Check permissions or connection settings.'
+            choices.append(Choice('Close', 'close'))
+            index = choose([c.text for c in choices], 'Wi-Fi', theme, message, deadline.run)
+            if index is None:
+                return 0
+            selected = choices[index]
+            if selected.action == 'close':
+                return 0
+            try:
+                perform(nm, selected, deadline.run)
+                message = 'Request completed. Status reflects NetworkManager link state.'
+            except (CommandError, ValueError) as exc:
+                print(f'rofi-network: {exc}', file=sys.stderr)
+                message = 'Request failed or access point vanished. No credentials were requested by this helper.'
+                if selected.action in ('activate', 'saved'):
+                    retry = choose(['Connection settings', 'Back'], 'Wi-Fi', theme, message, deadline.run)
+                    if retry is None:
+                        return 0
+                    if retry == 0:
+                        perform(nm, Choice('Settings', 'edit', (selected.args[0],)), deadline.run)
+
+
+if __name__ == '__main__':
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        raise SystemExit(0)
+    except (CommandError, OSError, ValueError) as exc:
+        print(f'rofi-network: {exc}', file=sys.stderr)
+        raise SystemExit(1)
